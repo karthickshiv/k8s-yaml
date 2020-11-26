@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testpod
+  namespace: test
+spec:
+  containers:
+    - name: test
+      image: ubuntu:latest
+      command:
+        - /bin/bash
+        - "-c"
+        - sleep 60m"
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: /test
+          name: test
+  volumes:
+    - name: test
+      persistentVolumeClaim:
+        claimName: gcp-pvc

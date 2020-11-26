@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind : Deployment
+metadata:
+  name: voting-app
+  namespace: dev
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  replicas: 15
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      role: voting-app-pod
+    matchExpressions:
+      - {key: version, operator: In, values: [beta, v2, v3]}
+  template:
+    metadata:
+      name: voting-app-pod
+      labels:
+        app: pytho
+        role: voting-app-pod
+        version: beta
+    spec:
+      containers:
+        - name: vote-app
+          image: schoolofdevops/vote:v1
+          envFrom:
+           - configMapRef:
+               name: vote
+          resources:
+            limits:
+             cpu: "200m"
+            requests:
+             cpu: "100m"
+          ports:
+            - containerPort: 80
+              protocol: TCP
+
